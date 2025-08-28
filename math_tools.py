@@ -26,30 +26,24 @@ gemini_model = OpenAIChatCompletionsModel(
 
 # Tool definition
 @function_tool
-def faq_return(ques: str) -> str:
-    Q = ques.lower().strip()
-    return f"Sorry, your question '{Q}' is not in the FAQs."
+def add_nums(num1:int , num2:int) -> int:
+    add=num1+num2
+    return f"Called Add nums Tool\n num1 {num1} + num2 {num2}\n Total {add}"
+
+@function_tool
+def multiple_nums(num1:int , num2:int) -> int:
+    multiples = num1 * num2
+    return f"Called Multiple  Tool\n num1 {num1} * num2 {num2}\n Total {multiples}"
+
 
 # Agent definition
-Faq_Agent = Agent(
-    name="FAQ Agent",
+adding_agent = Agent(
+    name="Adding Agent",
     instructions="""
-    You are a helpful FAQ bot. 
-    If questions are not similar to the predefined FAQs, then use the tool faq_return.
-
-    Predefined FAQs:
-    - Q: What is your name?
-      A: My name is FAQ Bot.
-    - Q: What can you do?
-      A: I can answer simple frequently asked questions.
-    - Q: Who created you?
-      A: I was created using the OpenAI Agent SDK by Hazoor Ahmed.
-    - Q: How smart are you?
-      A: I am just smart enough to answer basic FAQs!
-    - Q: Can you help me with coding?
-      A: Yes, but only in a very basic way.
+    You are a helpful Adding Agent.use add_nums tool for adding numbers then give total sum  to user
+    also can use multiple tool if users says for multiply numbers
     """,
-    tools=[faq_return]
+    tools=[add_nums,multiple_nums]
 )
 
 # Run configuration
@@ -61,13 +55,13 @@ my_config = RunConfig(
 
 # Main loop
 async def main():
-    print("FAQ Bot is running! Ask me something (type 'exit' to quit)\n")
+    print("Maths Tools are called! write 2 nums  (type 'exit' to quit)\n")
     while True:
         user_input = input("write : ")
         if user_input.lower() == "exit":
-            print("Bot: Goodbye!")
+            print("Math Tool Finished!")
             break
-        result = await Runner.run(Faq_Agent, input=user_input, run_config=my_config)
+        result = await Runner.run(adding_agent, input=user_input, run_config=my_config)
         print("Answer is:", result.final_output)
 
 if __name__ == "__main__":
